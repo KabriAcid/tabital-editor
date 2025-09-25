@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabital Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'fulfulde': ['Lucida Fulfulde', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="dark bg-gray-900 text-white font-sans overflow-hidden">
+    <div id="app" class="h-screen flex flex-col">
+        <!-- Top Toolbar -->
+        <div class="bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <img src="../../assets/icon.png" alt="Tabital" class="w-6 h-6" onerror="this.style.display='none'">
+                    <span class="font-semibold text-lg">Tabital Editor</span>
+                </div>
+                
+                <!-- File Operations -->
+                <div class="flex items-center space-x-2 border-l border-gray-600 pl-4">
+                    <button id="newBtn" class="toolbar-btn" title="New Document (Ctrl+N)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span>New</span>
+                    </button>
+                    <button id="openBtn" class="toolbar-btn" title="Open Document (Ctrl+O)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                        <span>Open</span>
+                    </button>
+                    <button id="saveBtn" class="toolbar-btn" title="Save Document (Ctrl+S)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        <span>Save</span>
+                    </button>
+                </div>
+
+                <!-- Formatting Tools -->
+                <div class="flex items-center space-x-2 border-l border-gray-600 pl-4">
+                    <button id="boldBtn" class="toolbar-btn" title="Bold (Ctrl+B)">
+                        <strong>B</strong>
+                    </button>
+                    <button id="italicBtn" class="toolbar-btn" title="Italic (Ctrl+I)">
+                        <em>I</em>
+                    </button>
+                    <button id="underlineBtn" class="toolbar-btn" title="Underline (Ctrl+U)">
+                        <u>U</u>
+                    </button>
+                    
+                    <div class="border-l border-gray-600 pl-2 ml-2">
+                        <select id="fontSizeSelect" class="bg-gray-700 text-white px-2 py-1 rounded text-sm">
+                            <option value="12">Small</option>
+                            <option value="16" selected>Normal</option>
+                            <option value="20">Large</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Color Picker -->
+                <div class="flex items-center space-x-2 border-l border-gray-600 pl-4">
+                    <span class="text-sm">Status:</span>
+                    <div class="flex space-x-1">
+                        <button class="color-btn" data-color="#ef4444" title="Not Reviewed" style="background-color: #ef4444;"></button>
+                        <button class="color-btn" data-color="#000000" title="Reviewed" style="background-color: #000000;"></button>
+                        <button class="color-btn" data-color="#f59e0b" title="In Progress" style="background-color: #f59e0b;"></button>
+                        <button class="color-btn" data-color="#10b981" title="Complete" style="background-color: #10b981;"></button>
+                        <button class="color-btn" data-color="#3b82f6" title="Needs Attention" style="background-color: #3b82f6;"></button>
+                        <button class="color-btn" data-color="#8b5cf6" title="Custom" style="background-color: #8b5cf6;"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Controls -->
+            <div class="flex items-center space-x-4">
+                <button id="searchBtn" class="toolbar-btn" title="Search & Replace (Ctrl+F)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+                <button id="themeToggle" class="toolbar-btn" title="Toggle Theme">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+                <button id="settingsBtn" class="toolbar-btn" title="Settings">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <div id="sidebar" class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
+                <!-- Project Navigation -->
+                <div class="p-4 border-b border-gray-700">
+                    <h3 class="text-sm font-semibold text-gray-300 mb-3">DOCUMENTS</h3>
+                    <div class="space-y-2">
+                        <button id="newDocBtn" class="w-full text-left px-3 py-2 rounded bg-blue-600 hover:bg-blue-700 transition-colors">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            New Document
+                        </button>
+                        <button id="openDocBtn" class="w-full text-left px-3 py-2 rounded hover:bg-gray-700 transition-colors">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
+                            </svg>
+                            Open Existing
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Files -->
+                <div class="p-4 flex-1">
+                    <h3 class="text-sm font-semibold text-gray-300 mb-3">RECENT FILES</h3>
+                    <div id="recentFiles" class="space-y-1">
+                        <!-- Recent files will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Dictionary Status -->
+                <div class="p-4 border-t border-gray-700">
+                    <div class="text-xs text-gray-400">
+                        <div>Dictionary: <span id="dictWordCount">0</span> words</div>
+                        <div>Word Count: <span id="documentWordCount">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Area -->
+            <div class="flex-1 flex flex-col">
+                <!-- Editor Container -->
+                <div class="flex-1 relative">
+                    <div id="editorContainer" class="h-full p-8 overflow-auto">
+                        <div id="editor" 
+                             class="min-h-full bg-white dark:bg-gray-900 text-black dark:text-white p-8 rounded-lg shadow-lg font-fulfulde text-base leading-relaxed focus:outline-none"
+                             contenteditable="true"
+                             spellcheck="false"
+                             style="font-size: 16px;">
+                            <p>Start typing your Fulfulde translation here...</p>
+                        </div>
+                    </div>
+
+                    <!-- Autocomplete Dropdown -->
+                    <div id="autocomplete" class="absolute bg-gray-800 border border-gray-600 rounded shadow-lg hidden z-10 max-w-xs">
+                        <!-- Autocomplete suggestions will appear here -->
+                    </div>
+                </div>
+
+                <!-- Status Bar -->
+                <div class="bg-gray-800 border-t border-gray-700 px-4 py-2 flex items-center justify-between text-sm">
+                    <div class="flex items-center space-x-4">
+                        <span id="currentFile">Untitled Document</span>
+                        <span id="saveStatus" class="text-gray-400">Saved</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span>Words: <span id="wordCount">0</span></span>
+                        <span>Characters: <span id="charCount">0</span></span>
+                        <span id="cursorPosition">Line 1, Column 1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Modal -->
+        <div id="searchModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+            <div class="bg-gray-800 rounded-lg p-6 w-96">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Search & Replace</h3>
+                    <button id="closeSearch" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Find:</label>
+                        <input id="searchInput" type="text" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Replace with:</label>
+                        <input id="replaceInput" type="text" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center">
+                            <input id="caseSensitive" type="checkbox" class="mr-2">
+                            Case sensitive
+                        </label>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="findNext" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded">Find Next</button>
+                        <button id="replaceOne" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">Replace</button>
+                        <button id="replaceAll" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded">Replace All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

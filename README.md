@@ -1,107 +1,85 @@
 # Tabital Editor
 
-A dedicated desktop application for Fulfulde translation work, designed specifically for translating major Islamic works into Fulfulde (Adamawa dialect).
+A specialized desktop application for Fulfulde translation work, built with Electron and vanilla JavaScript.
 
 ## Features
 
-- **Fulfulde-optimized editor** with Lucida Fulfulde font support
-- **Smart autocomplete** for Fulfulde words with built-in dictionary
-- **Word-like interface** with familiar formatting tools
-- **GitHub Desktop-inspired** clean sidebar navigation
-- **Offline-first** - no internet connection required
-- **Export capabilities** - save as TXT, DOCX, and PDF
-- **Dark/Light mode** with dark mode as default
-- **Auto-save functionality** with configurable intervals
-- **Find & Replace** with Unicode-aware search
-- **Recent documents** tracking
+- **Fulfulde-Optimized Editor**: Custom font support with Lucida Fulfulde
+- **Rich Text Formatting**: Bold, italic, underline, font sizing, and color coding
+- **Review Status System**: Color-coded text to track translation progress
+- **Dictionary Integration**: Built-in autocomplete and spell checking
+- **Search & Replace**: Unicode-aware search with case sensitivity options
+- **Dark/Light Themes**: Comfortable editing in any lighting condition
+- **Auto-save**: Automatic backup every 10 minutes
+- **Export Options**: Save as .docx, .pdf, or .txt formats
+- **Recent Files**: Quick access to recently opened documents
+- **Keyboard Shortcuts**: Familiar Word-like shortcuts
 
-## Tech Stack
+## Installation
 
-- **Electron.js** - Cross-platform desktop framework
-- **React + TypeScript** - Modern UI framework
-- **Tailwind CSS** - Utility-first styling
-- **SQLite (better-sqlite3)** - Local dictionary storage
-- **Monaco Editor** - VS Code-based text editor
-- **Vite** - Fast build tool
+1. Clone this repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Add the Lucida Fulfulde font file to `assets/fonts/LucidaFulfulde.ttf`
+4. Start the application:
+   ```bash
+   npm start
+   ```
 
-## Usage
+## Development
 
-### Getting Started
+To run in development mode with DevTools:
+```bash
+npm run dev
+```
 
-1. Launch the application
-2. Choose "Create New Document" or "Open Existing Document"
-3. Start typing in Fulfulde with automatic font rendering
-4. Use the toolbar for formatting (Bold, Italic, Underline, etc.)
+## Building
 
-### Dictionary Features
+To build the application for distribution:
+```bash
+npm run build
+```
 
-- Type Fulfulde words to see autocomplete suggestions
-- Unknown words are underlined in yellow
-- Hover over unknown words to add them to the dictionary
-- Access "Dictionary Manager" from the Tools menu to manage words
-
-### Keyboard Shortcuts
+## Keyboard Shortcuts
 
 - `Ctrl+N` - New Document
 - `Ctrl+O` - Open Document
 - `Ctrl+S` - Save Document
-- `Ctrl+Shift+S` - Save As
-- `Ctrl+F` - Find & Replace
+- `Ctrl+F` - Search & Replace
 - `Ctrl+B` - Bold
 - `Ctrl+I` - Italic
 - `Ctrl+U` - Underline
-- `Ctrl+D` - Toggle Dark Mode
 
-### Export Options
+## Color Coding System
 
-- **TXT** - Plain text format
-- **DOCX** - Microsoft Word format (preserves formatting)
-- **PDF** - Portable Document Format (preserves Fulfulde glyphs)
+- **Red**: Not reviewed
+- **Black**: Reviewed
+- **Orange**: In progress
+- **Green**: Complete
+- **Blue**: Needs attention
+- **Purple**: Custom status
 
-## Project Structure
+## Dictionary
 
-```
-tabital-editor/
-├── src/
-│   ├── main/                 # Electron main process
-│   │   ├── main.js          # Main application logic
-│   │   └── preload.js       # Preload script for IPC
-│   └── renderer/            # React frontend
-│       ├── components/      # UI components
-│       ├── hooks/          # Custom React hooks
-│       ├── App.tsx         # Main app component
-│       └── main.tsx        # React entry point
-├── assets/
-│   └── fonts/              # Font files directory
-├── package.json
-└── README.md
-```
+The application includes a built-in dictionary system that:
+- Provides autocomplete suggestions as you type
+- Highlights unknown words
+- Allows easy addition of new words
+- Stores words locally for offline use
 
-## Development
+## File Formats
 
-This creates a distributable Electron application.
+- **Native**: `.tab` files (HTML format with metadata)
+- **Export**: `.txt`, `.docx`, `.pdf` with proper Fulfulde font embedding
 
-### Database Schema
+## Requirements
 
-The application uses SQLite with the following tables:
-
-- `dictionary` - Stores Fulfulde words and definitions
-- `recent_documents` - Tracks recently opened files
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+- Node.js 16 or higher
+- Electron 28 or higher
+- Lucida Fulfulde font file (not included)
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0) - see the LICENSE file for details. This is a copyleft project: you must share any modifications under the same license.
-
-## Acknowledgments
-
-- Designed for Islamic scholars translating major works into Fulfulde
-- Inspired by the simplicity of Microsoft Word and GitHub Desktop
-- Built with modern web technologies for cross-platform compatibility
+MIT License - see LICENSE file for details.

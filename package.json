@@ -1,44 +1,27 @@
 {
   "name": "tabital-editor",
   "version": "1.0.0",
-  "description": "Fulfulde Translator Desktop App",
+  "description": "A specialized desktop editor for Fulfulde translation work",
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "concurrently \"npm run dev:renderer\" \"wait-on http://localhost:3000 && electron .\"",
-    "dev:renderer": "vite",
-    "build": "vite build && electron-builder",
-    "build:renderer": "vite build",
-    "postinstall": "electron-builder install-app-deps"
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
-  "keywords": [
-    "fulfulde",
-    "translator",
-    "editor",
-    "desktop"
-  ],
+  "keywords": ["fulfulde", "translation", "editor", "desktop"],
   "author": "Tabital Editor Team",
   "license": "MIT",
   "devDependencies": {
-    "@types/sqlite3": "^3.1.8",
-    "@types/node": "^20.10.0",
-    "@vitejs/plugin-react": "^4.2.0",
-    "concurrently": "^8.2.2",
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.1",
-    "typescript": "^5.3.0",
-    "vite": "^5.0.0",
-    "wait-on": "^7.2.0"
+    "electron-builder": "^24.6.4"
   },
   "dependencies": {
-    "@monaco-editor/react": "^4.6.0",
-    "sqlite3": "^5.1.6",
-    "docx": "^8.5.0",
     "electron-store": "^8.1.0",
-    "lucide-react": "^0.294.0",
+    "docx": "^8.2.2",
     "pdf-lib": "^1.17.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "morgan": "^1.10.0"
   },
   "build": {
     "appId": "com.tabital.editor",
@@ -47,16 +30,18 @@
       "output": "dist"
     },
     "files": [
-      "src/main/**/*",
-      "dist-renderer/**/*",
+      "src/**/*",
       "assets/**/*",
       "node_modules/**/*"
     ],
-    "extraResources": [
-      {
-        "from": "assets/fonts",
-        "to": "fonts"
-      }
-    ]
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }

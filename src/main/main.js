@@ -1,345 +1,142 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require("electron");
-const path = require("path");
-const fs = require("fs");
-const sqlite3 = require("sqlite3").verbose();
-const Store = require("electron-store");
+const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
+const path = require('path');
+const fs = require('fs');
+const Store = require('electron-store');
 
-// Initialize electron store for settings
+// Initialize electron store for settings and dictionary
 const store = new Store();
+const dictionary = new Store({ name: 'dictionary' });
 
 let mainWindow;
-let db;
-
-// Initialize SQLite database
-function initDatabase() {
-  const dbPath = path.join(app.getPath("userData"), "tabital.db");
-  db = new Database(dbPath);
-
-  // Create dictionary table
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS dictionary (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      word TEXT UNIQUE NOT NULL,
-      definition TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
-  // Create documents table for recent files
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS recent_documents (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      file_path TEXT UNIQUE NOT NULL,
-      file_name TEXT NOT NULL,
-      last_opened DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
-  // Insert some sample Fulfulde words
-  const insertWord = db.prepare(
-    "INSERT OR IGNORE INTO dictionary (word, definition) VALUES (?, ?)"
-  );
-  const sampleWords = [
-    ["Allah", "God"],
-    ["salaam", "peace"],
-    ["kitaab", "book"],
-    ["jaango", "learn"],
-    ["andude", "write"],
-    ["wiyude", "say/speak"],
-    ["yiide", "see"],
-    ["nannde", "come"],
-    ["yahude", "go"],
-    ["jooɗude", "sit"],
-  ];
-
-  sampleWords.forEach(([word, definition]) => {
-    insertWord.run(word, definition);
-  });
-}
 
 function createWindow() {
+  // Create the browser window
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
     minWidth: 1000,
     minHeight: 600,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true
     },
-    titleBarStyle: "default",
-    show: false,
+    icon: path.join(__dirname, '../../assets/icon.png'),
+    titleBarStyle: 'default',
+    show: false
   });
 
   // Load the app
-  if (process.env.NODE_ENV === "development") {
-    mainWindow.loadURL("http://localhost:3000");
-    mainWindow.webContents.openDevTools();
-  } else {
-    mainWindow.loadFile(path.join(__dirname, "../dist-renderer/index.html"));
-  }
+  mainWindow.loadFile('src/renderer/index.html');
 
-  mainWindow.once("ready-to-show", () => {
+  // Show window when ready
+  mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
 
-  // Create application menu
-  createMenu();
+  // Open DevTools in development
+  if (process.argv.includes('--dev')) {
+    mainWindow.webContents.openDevTools();
+  }
 }
 
-function createMenu() {
-  const template = [
-    {
-      label: "File",
-      submenu: [
-        {
-          label: "New Document",
-          accelerator: "CmdOrCtrl+N",
-          click: () => {
-            mainWindow.webContents.send("menu-new-document");
-          },
-        },
-        {
-          label: "Open Document",
-          accelerator: "CmdOrCtrl+O",
-          click: async () => {
-            const result = await dialog.showOpenDialog(mainWindow, {
-              properties: ["openFile"],
-              filters: [
-                { name: "Text Files", extensions: ["txt", "docx"] },
-                { name: "All Files", extensions: ["*"] },
-              ],
-            });
+// App event listeners
+app.whenReady().then(createWindow);
 
-            if (!result.canceled) {
-              mainWindow.webContents.send(
-                "menu-open-document",
-                result.filePaths[0]
-              );
-            }
-          },
-        },
-        {
-          label: "Save",
-          accelerator: "CmdOrCtrl+S",
-          click: () => {
-            mainWindow.webContents.send("menu-save-document");
-          },
-        },
-        {
-          label: "Save As",
-          accelerator: "CmdOrCtrl+Shift+S",
-          click: () => {
-            mainWindow.webContents.send("menu-save-as-document");
-          },
-        },
-        { type: "separator" },
-        {
-          label: "Export as PDF",
-          click: () => {
-            mainWindow.webContents.send("menu-export-pdf");
-          },
-        },
-        { type: "separator" },
-        {
-          label: "Quit",
-          accelerator: process.platform === "darwin" ? "Cmd+Q" : "Ctrl+Q",
-          click: () => {
-            app.quit();
-          },
-        },
-      ],
-    },
-    {
-      label: "Edit",
-      submenu: [
-        { role: "undo" },
-        { role: "redo" },
-        { type: "separator" },
-        { role: "cut" },
-        { role: "copy" },
-        { role: "paste" },
-        { role: "selectall" },
-        { type: "separator" },
-        {
-          label: "Find & Replace",
-          accelerator: "CmdOrCtrl+F",
-          click: () => {
-            mainWindow.webContents.send("menu-find-replace");
-          },
-        },
-      ],
-    },
-    {
-      label: "View",
-      submenu: [
-        {
-          label: "Toggle Dark Mode",
-          accelerator: "CmdOrCtrl+D",
-          click: () => {
-            mainWindow.webContents.send("menu-toggle-theme");
-          },
-        },
-        { type: "separator" },
-        { role: "reload" },
-        { role: "forceReload" },
-        { role: "toggleDevTools" },
-        { type: "separator" },
-        { role: "resetZoom" },
-        { role: "zoomIn" },
-        { role: "zoomOut" },
-        { type: "separator" },
-        { role: "togglefullscreen" },
-      ],
-    },
-    {
-      label: "Tools",
-      submenu: [
-        {
-          label: "Dictionary Manager",
-          click: () => {
-            mainWindow.webContents.send("menu-dictionary-manager");
-          },
-        },
-        {
-          label: "Settings",
-          accelerator: "CmdOrCtrl+,",
-          click: () => {
-            mainWindow.webContents.send("menu-settings");
-          },
-        },
-      ],
-    },
-  ];
-
-  const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
-}
-
-// IPC handlers
-ipcMain.handle("get-dictionary-words", (event, query) => {
-  if (!db) return [];
-
-  const stmt = query
-    ? db.prepare(
-        "SELECT * FROM dictionary WHERE word LIKE ? ORDER BY word LIMIT 10"
-      )
-    : db.prepare("SELECT * FROM dictionary ORDER BY word LIMIT 100");
-
-  return query ? stmt.all(`${query}%`) : stmt.all();
-});
-
-ipcMain.handle("add-dictionary-word", (event, word, definition) => {
-  if (!db) return false;
-
-  try {
-    const stmt = db.prepare(
-      "INSERT INTO dictionary (word, definition) VALUES (?, ?)"
-    );
-    stmt.run(word, definition || "");
-    return true;
-  } catch (error) {
-    console.error("Error adding word to dictionary:", error);
-    return false;
-  }
-});
-
-ipcMain.handle("save-file-dialog", async (event, content, currentPath) => {
-  const result = await dialog.showSaveDialog(mainWindow, {
-    defaultPath: currentPath || "Untitled.txt",
-    filters: [
-      { name: "Text Files", extensions: ["txt"] },
-      { name: "Word Documents", extensions: ["docx"] },
-      { name: "All Files", extensions: ["*"] },
-    ],
-  });
-
-  if (!result.canceled) {
-    try {
-      fs.writeFileSync(result.filePath, content, "utf8");
-
-      // Add to recent documents
-      if (db) {
-        const stmt = db.prepare(`
-          INSERT OR REPLACE INTO recent_documents (file_path, file_name, last_opened) 
-          VALUES (?, ?, CURRENT_TIMESTAMP)
-        `);
-        stmt.run(result.filePath, path.basename(result.filePath));
-      }
-
-      return { success: true, filePath: result.filePath };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  return { success: false, canceled: true };
-});
-
-ipcMain.handle("read-file", async (event, filePath) => {
-  try {
-    const content = fs.readFileSync(filePath, "utf8");
-
-    // Add to recent documents
-    if (db) {
-      const stmt = db.prepare(`
-        INSERT OR REPLACE INTO recent_documents (file_path, file_name, last_opened) 
-        VALUES (?, ?, CURRENT_TIMESTAMP)
-      `);
-      stmt.run(filePath, path.basename(filePath));
-    }
-
-    return { success: true, content, filePath };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-});
-
-ipcMain.handle("get-recent-documents", () => {
-  if (!db) return [];
-
-  const stmt = db.prepare(`
-    SELECT * FROM recent_documents 
-    ORDER BY last_opened DESC 
-    LIMIT 10
-  `);
-
-  return stmt.all();
-});
-
-ipcMain.handle("get-store-value", (event, key) => {
-  return store.get(key);
-});
-
-ipcMain.handle("set-store-value", (event, key, value) => {
-  store.set(key, value);
-  return true;
-});
-
-app.whenReady().then(() => {
-  initDatabase();
-  createWindow();
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
-});
-
-app.on("window-all-closed", () => {
-  if (db) {
-    db.close();
-  }
-
-  if (process.platform !== "darwin") {
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on("before-quit", () => {
-  if (db) {
-    db.close();
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
   }
+});
+
+// IPC handlers for file operations
+ipcMain.handle('save-file', async (event, { filePath, content }) => {
+  try {
+    if (!filePath) {
+      const result = await dialog.showSaveDialog(mainWindow, {
+        filters: [
+          { name: 'Tabital Documents', extensions: ['tab'] },
+          { name: 'Text Files', extensions: ['txt'] },
+          { name: 'All Files', extensions: ['*'] }
+        ]
+      });
+      
+      if (result.canceled) return null;
+      filePath = result.filePath;
+    }
+    
+    await fs.promises.writeFile(filePath, content, 'utf8');
+    return filePath;
+  } catch (error) {
+    console.error('Save error:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('open-file', async () => {
+  try {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      filters: [
+        { name: 'Tabital Documents', extensions: ['tab'] },
+        { name: 'Text Files', extensions: ['txt'] },
+        { name: 'All Files', extensions: ['*'] }
+      ],
+      properties: ['openFile']
+    });
+    
+    if (result.canceled) return null;
+    
+    const filePath = result.filePaths[0];
+    const content = await fs.promises.readFile(filePath, 'utf8');
+    
+    return { filePath, content };
+  } catch (error) {
+    console.error('Open error:', error);
+    throw error;
+  }
+});
+
+// Settings management
+ipcMain.handle('get-setting', (event, key) => {
+  return store.get(key);
+});
+
+ipcMain.handle('set-setting', (event, key, value) => {
+  store.set(key, value);
+});
+
+// Dictionary management
+ipcMain.handle('get-dictionary', () => {
+  return dictionary.get('words', []);
+});
+
+ipcMain.handle('add-word', (event, word) => {
+  const words = dictionary.get('words', []);
+  if (!words.includes(word.toLowerCase())) {
+    words.push(word.toLowerCase());
+    dictionary.set('words', words);
+  }
+});
+
+ipcMain.handle('search-dictionary', (event, query) => {
+  const words = dictionary.get('words', []);
+  return words.filter(word => word.startsWith(query.toLowerCase())).slice(0, 10);
+});
+
+// Recent files management
+ipcMain.handle('add-recent-file', (event, filePath) => {
+  const recentFiles = store.get('recentFiles', []);
+  const filtered = recentFiles.filter(file => file !== filePath);
+  filtered.unshift(filePath);
+  store.set('recentFiles', filtered.slice(0, 10));
+});
+
+ipcMain.handle('get-recent-files', () => {
+  return store.get('recentFiles', []);
 });
