@@ -11,11 +11,16 @@
     "build:renderer": "vite build",
     "postinstall": "electron-builder install-app-deps"
   },
-  "keywords": ["fulfulde", "translator", "editor", "desktop"],
+  "keywords": [
+    "fulfulde",
+    "translator",
+    "editor",
+    "desktop"
+  ],
   "author": "Tabital Editor Team",
   "license": "MIT",
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.8",
+    "@types/sqlite3": "^3.1.8",
     "@types/node": "^20.10.0",
     "@vitejs/plugin-react": "^4.2.0",
     "concurrently": "^8.2.2",
@@ -27,7 +32,7 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
-    "better-sqlite3": "^9.2.2",
+    "sqlite3": "^5.1.6",
     "docx": "^8.5.0",
     "electron-store": "^8.1.0",
     "lucide-react": "^0.294.0",
