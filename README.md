@@ -24,48 +24,24 @@ A dedicated desktop application for Fulfulde translation work, designed specific
 - **Monaco Editor** - VS Code-based text editor
 - **Vite** - Fast build tool
 
-## Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd tabital-editor
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Add the Lucida Fulfulde font:**
-   - Place the `lucida-fulfulde.ttf` font file in the `assets/fonts/` directory
-   - The font should be named exactly `lucida-fulfulde.ttf`
-
-4. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-
-5. **Build for production:**
-   ```bash
-   npm run build
-   ```
-
 ## Usage
 
 ### Getting Started
+
 1. Launch the application
 2. Choose "Create New Document" or "Open Existing Document"
 3. Start typing in Fulfulde with automatic font rendering
 4. Use the toolbar for formatting (Bold, Italic, Underline, etc.)
 
 ### Dictionary Features
+
 - Type Fulfulde words to see autocomplete suggestions
 - Unknown words are underlined in yellow
 - Hover over unknown words to add them to the dictionary
 - Access "Dictionary Manager" from the Tools menu to manage words
 
 ### Keyboard Shortcuts
+
 - `Ctrl+N` - New Document
 - `Ctrl+O` - Open Document
 - `Ctrl+S` - Save Document
@@ -77,6 +53,7 @@ A dedicated desktop application for Fulfulde translation work, designed specific
 - `Ctrl+D` - Toggle Dark Mode
 
 ### Export Options
+
 - **TXT** - Plain text format
 - **DOCX** - Microsoft Word format (preserves formatting)
 - **PDF** - Portable Document Format (preserves Fulfulde glyphs)
@@ -102,20 +79,12 @@ tabital-editor/
 
 ## Development
 
-### Running in Development Mode
-```bash
-npm run dev
-```
-This starts both the Vite dev server and Electron in development mode.
-
-### Building for Production
-```bash
-npm run build
-```
 This creates a distributable Electron application.
 
 ### Database Schema
+
 The application uses SQLite with the following tables:
+
 - `dictionary` - Stores Fulfulde words and definitions
 - `recent_documents` - Tracks recently opened files
 
@@ -129,7 +98,7 @@ The application uses SQLite with the following tables:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0) - see the LICENSE file for details. This is a copyleft project: you must share any modifications under the same license.
 
 ## Acknowledgments
 
