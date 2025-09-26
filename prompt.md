@@ -1,6 +1,6 @@
 # Tabital Editor
 
-# Fulfulde Translator (Tabital Editor) Desktop App Specification (Vanilla JS Version)
+# Fulfulde Translator (Tabital Editor) Desktop App Specification (Figma-Inspired, React + TypeScript + Vite)
 
 ## Why This App is Needed
 
@@ -11,65 +11,97 @@ Current tools like Microsoft Word are **not optimized for Fulfulde** because:
 - They lack proper autocomplete or word suggestions for Fulfulde.
 - They require installing a special font (Lucida Fulfulde) but provide no native editor support.
 
-We need a **dedicated desktop application** that is offline-first, distraction-free, and tailored to **Fulfulde translation** — with the simplicity of **Microsoft Word**
+We need a **dedicated desktop application** that is offline-first, distraction-free, and tailored to **Fulfulde translation** — with the simplicity of **Microsoft Word** and a modern, clean UI inspired by the attached Figma design.
 
 ---
 
-## Tech Stack (Vanilla Version)
+## Tech Stack (Figma-Inspired, Modern Frontend)
 
 - **Electron.js** → Desktop shell (cross-platform)
-- **Vanilla JavaScript** → All logic and UI
-- **HTML** → UI structure
+- **React** → UI framework
+- **TypeScript** → Type-safe development
+- **Vite** → Fast build tool
 - **Tailwind CSS** → Styling + responsive UI
+- **Lucide React** → Icon library
+- **Framer Motion** → Animations and transitions
 - **Morgan** → Logging
 - **Lucida Fulfulde (.ttf)** → Default font for editor (bundled inside app)
-- **Simple local storage** → Use JSON files or `electron-store` for dictionary and recent files (no SQLite)
+- **SQLite3** → Dictionary and recent files storage (not better-sqlite3)
+- **Prisma** - ORM
 - **Node.js libraries** (`docx`, `pdf-lib`) → For exports (txt, docx, pdf)
 
 ---
 
+
+## Additional Requirements
+
+- Use captive portals for authentication or network access if needed (e.g., for cloud sync or online features)
+- All dropdowns and modals should close when the ESC key is pressed
+- Avoid Object-Oriented Programming (OOP); use functional programming and hooks in React
+- The app should be non-MVP: deliver a fully functional, production-ready experience, not just a minimal prototype
+- All features described should be implemented and working out-of-the-box
+
 ## Features
 
+### 1. Text Editor (React + TypeScript)
 
-### 1. Text Editor (Vanilla JS)
-
-- Core editing area with **Lucida Fulfulde** as the default font
-- Rich text tools: Bold, Italics, Underline, Font size, Alignment, Bullet lists, Line spacing, and text coloring (foreground/background color)
+- Core editing area with **Lucida Fulfulde** (Even though loaded as harcoded no font-switching) as the default font
+- Rich text tools: Bold, Italic, Underline, Strikethrough, Font size, Font family, Alignment, Bullet list, Numbered list, Image, Link, Line spacing, and text coloring (foreground/background color)
 - **Color-coded review status:**
   - Red = Not reviewed
   - Black = Reviewed
-  - Other colors = Custom status (e.g., in progress, needs attention)
+  - Orange = In progress
+  - Green = Complete
+  - Blue = Needs attention
+  - Purple = Custom status
 - Rounded color picker list: When a color is chosen, the selected text changes to that color, visually indicating its review status.
 - All common shortcuts should match Windows Word (e.g., Ctrl+B for bold, Ctrl+I for italics, etc.)
-- Autosave every 10 minutes with backup copies
-- Word count in status bar
+- Autosave every 10s with backup copies
+- Word count and character count in status bar
 - Light/Dark mode toggle (default Dark Mode)
+- Text field numbering of lines just like in Vscode.
 
 ### 2. Toolbar (Word-like)
 
-- Large, clear buttons with icons + labels:
-  - **B Bold | I Italic | U Underline | Bullet List | Line Spacing | Text Color | Save | Export (TXT/DOCX/PDF) | Settings**
-- Export preserves formatting
-- Search & Replace (Unicode-aware, with case toggle)
-- Toolbar and navigation should provide a familiar Word-like feel, leveraging Electron's default top navigation and supplementing with a custom toolbar for editing actions
+- Filename as a header and has wrap and below it a small text for 'last updated at' on the right. On the left, a search bar, export (opens a modal with file type options) and save button
+- Horizontal toolbar above the editor, visually separated by borders between tool categories
+- **Toolbar icons (Only category labels, just icons):**
+  - Font family selector (Static)
+  - Font size selector
+  - Rounded color picker (review status colors)
+  - Formatting: Bold, Italic, Underline, Strikethrough
+  - List tools: Bullet list, Numbered list
+  - Alignment: Left, Center, Right, Justify
+  - Line spacing
+  - Export (TXT/DOCX/PDF)
+  - Save
+  - Settings (Redirects to the settings page)
+- Each category of tools is separated by a border, mimicking the look of the Word toolbar
 
-### 3. Sidebar
+### 3. Sidebar (Vscode-Inspired)
 
-- Project/File navigation
-- Buttons: **New Document | Open Existing | Recent Files**
-- Option to split screen for parallel translation (source on left, Fulfulde on right)
+- Minimal sidebar with navigation icons relevant to translation workflow:
+  - Home (Dashboard)
+  - New Document
+  - Open Existing Document
+  - Recent Files
+  - Dictionary Manager
+  - Settings
+  - Help & Support
+- Prominent "New Document" button and "Open Existing" option
+- Recent files listed below document actions
 
 ### 4. Dictionary + Autocomplete
 
-- Store dictionary words in a JSON file or with `electron-store`
-- Provide autocomplete suggestions as user types, with a dropdown that appears just like VS Code's IntelliSense/autocomplete
+- Store dictionary words in SQLite3
+- Provide autocomplete suggestions as user types, with a dropdown similar to VS Code's IntelliSense/autocomplete
 - Words not found in the dictionary should be underlined in yellow. When hovered, a tooltip appears with the option to add the word to the dictionary
 - "Learning mode": add new words into dictionary easily
 
 ### 5. Fonts & Typing
 
-- Bundle **Lucida Fulfulde.ttf** inside the app
-- Use it as the global font so typing Q/X/Z automatically renders their Fulfulde equivalents
+- **Plus Jakarta Sans** as font inside the app
+- Use lucida it as the global font so typing Q/X/Z automatically renders their Fulfulde equivalents
 - Font-size options: Small | Normal | Large
 
 ### 6. Export Options
@@ -78,14 +110,23 @@ We need a **dedicated desktop application** that is offline-first, distraction-f
 - Offline only (no internet dependency)
 - Exports preserve Fulfulde glyphs (via bundled font)
 
+### 7. UX Design (Figma-Inspired)
 
-### 7. UX Design
+- Clean, minimal sidebar on the left with navigation icons and document actions
+- Main editor area centered, with clear title and last updated info
+- Search bar at the top for searching within the file
+- Export and Save buttons are rounded and visually distinct
+- Status bar at the bottom shows page, word count, character count, column, and line
+- Consistent use of rounded buttons and color accents
+- Modern, clean, and minimal design with rounded elements and color coding
 
-- Layout inspired by **Microsoft Word** (clean sidebar (vertical icons only), simple top toolbar)
-- Editing experience and keybindings inspired by **Word** (large readable toolbar buttons)
-- Dark Mode default, with option for Light Mode
-- Simple welcome screen: **New Document, Open Document, Settings**
-- **UI Inspiration:** Use the attached Figma design as a reference for the editor layout, sidebar, and block editing experience. Ignore any sections not relevant to Fulfulde translation, and adapt/replace UI elements as needed to fit the objectives (especially toolbar and color picker).
+---
+
+## Database Usage
+
+- Use **sqlite3** Node.js package for local database storage
+- Interact with SQLite directly using SQL queries (no ORM needed for this project)
+- Store dictionary words, recent files, and other metadata in SQLite tables
 
 ---
 
@@ -93,8 +134,8 @@ We need a **dedicated desktop application** that is offline-first, distraction-f
 
 - Full **Electron project** scaffolded with:
   - `/src/main` (Electron main process)
-  - `/src/renderer` (Vanilla JS/HTML/Tailwind UI)
-  - `/assets/fonts` (Lucida Fulfulde bundled)
+  - `/src/renderer` (React/TypeScript/Tailwind UI powered by Vite)
+  - `/assets/fonts/lucida-fulfulde.ttf` (Lucida Fulfulde)
 - Ready to run with `npm install && npm start`
 - Fully offline-capable (no external API calls)
 - Clean, intuitive UI that non-tech users can easily adopt
