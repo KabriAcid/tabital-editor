@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Search, Plus, BookOpen, Trash2 } from 'lucide-react';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Search, Plus, BookOpen, Trash2 } from "lucide-react";
 
 interface DictionaryWord {
   id: string;
   word: string;
-  translation?: string;
   frequency: number;
   dateAdded: Date;
 }
@@ -17,41 +16,37 @@ interface DictionaryModalProps {
 
 const DictionaryModal: React.FC<DictionaryModalProps> = ({
   isOpen,
-  onClose
+  onClose,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [newWord, setNewWord] = useState('');
-  const [newTranslation, setNewTranslation] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [newWord, setNewWord] = useState("");
+  // Remove translation state
   const [showAddForm, setShowAddForm] = useState(false);
 
   // Mock dictionary words - replace with actual data
   const [words, setWords] = useState<DictionaryWord[]>([
     {
-      id: '1',
-      word: 'salaam',
-      translation: 'peace',
+      id: "1",
+      word: "salaam",
       frequency: 45,
-      dateAdded: new Date('2024-01-10')
+      dateAdded: new Date("2024-01-10"),
     },
     {
-      id: '2',
-      word: 'kitaab',
-      translation: 'book',
+      id: "2",
+      word: "kitaab",
       frequency: 32,
-      dateAdded: new Date('2024-01-08')
+      dateAdded: new Date("2024-01-08"),
     },
     {
-      id: '3',
-      word: 'hadith',
-      translation: 'saying/tradition',
+      id: "3",
+      word: "hadith",
       frequency: 28,
-      dateAdded: new Date('2024-01-05')
-    }
+      dateAdded: new Date("2024-01-05"),
+    },
   ]);
 
-  const filteredWords = words.filter(word =>
-    word.word.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (word.translation && word.translation.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredWords = words.filter((word) =>
+    word.word.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAddWord = () => {
@@ -59,23 +54,21 @@ const DictionaryModal: React.FC<DictionaryModalProps> = ({
       const word: DictionaryWord = {
         id: Math.random().toString(36).substr(2, 9),
         word: newWord.trim(),
-        translation: newTranslation.trim() || undefined,
         frequency: 1,
-        dateAdded: new Date()
+        dateAdded: new Date(),
       };
-      setWords(prev => [word, ...prev]);
-      setNewWord('');
-      setNewTranslation('');
+      setWords((prev) => [word, ...prev]);
+      setNewWord("");
       setShowAddForm(false);
     }
   };
 
   const handleDeleteWord = (id: string) => {
-    setWords(prev => prev.filter(word => word.id !== id));
+    setWords((prev) => prev.filter((word) => word.id !== id));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       if (showAddForm) {
         setShowAddForm(false);
       } else {
@@ -119,7 +112,10 @@ const DictionaryModal: React.FC<DictionaryModalProps> = ({
             <div className="p-6">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                  <Search
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={16}
+                  />
                   <input
                     type="text"
                     value={searchQuery}
@@ -144,7 +140,7 @@ const DictionaryModal: React.FC<DictionaryModalProps> = ({
                 {showAddForm && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
+                    animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4"
                   >
@@ -154,13 +150,6 @@ const DictionaryModal: React.FC<DictionaryModalProps> = ({
                         value={newWord}
                         onChange={(e) => setNewWord(e.target.value)}
                         placeholder="Fulfulde word..."
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <input
-                        type="text"
-                        value={newTranslation}
-                        onChange={(e) => setNewTranslation(e.target.value)}
-                        placeholder="Translation (optional)..."
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
@@ -201,14 +190,10 @@ const DictionaryModal: React.FC<DictionaryModalProps> = ({
                           <span className="font-medium text-gray-900 dark:text-white">
                             {word.word}
                           </span>
-                          {word.translation && (
-                            <span className="text-gray-500 dark:text-gray-400">
-                              → {word.translation}
-                            </span>
-                          )}
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          Used {word.frequency} times • Added {word.dateAdded.toLocaleDateString()}
+                          Used {word.frequency} times • Added{" "}
+                          {word.dateAdded.toLocaleDateString()}
                         </div>
                       </div>
                       <button

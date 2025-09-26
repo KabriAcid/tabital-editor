@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, Download } from 'lucide-react';
+import { X, Download } from 'lucide-react';
 import wordIcon from '../assets/icons/word-icon.png';
 import pdfIcon from '../assets/icons/pdf-icon.png';
 import txtIcon from '../assets/icons/txt-icon.png';

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+// import { useDictionary } from "../modals/DictionaryModal";
 import { motion } from "framer-motion";
 
 interface EditorProps {
@@ -13,28 +14,34 @@ const Editor: React.FC<EditorProps> = ({
   content,
   onChange,
   fontSize,
-  isDarkMode,
+  // isDarkMode,
   onSelectionChange,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [lineNumbers, setLineNumbers] = useState<number[]>([1]);
   const [unknownWords, setUnknownWords] = useState<Set<string>>(new Set());
 
-  // Mock dictionary for demonstration
-  const dictionary = new Set([
-    "the",
-    "and",
-    "or",
-    "but",
-    "in",
-    "on",
-    "at",
-    "to",
-    "for",
-    "of",
-    "with",
-    "by",
-  ]);
+  // TODO: Replace with real dictionary source (context, prop, or IPC)
+  // For now, use a mock array
+  const words = [
+    { word: "salaam" },
+    { word: "kitaab" },
+    
+    { word: "hadith" },
+    { word: "hakkiilo" },
+    { word: "hakkunde" },
+    { word: "hakkil" },
+    { word: "hakkilo" },
+    { word: "hakkiloo" },
+    { word: "hakkilol" },
+    { word: "hakkilorde" },
+  ];
+  const dictionary = new Set(words.map((w) => w.word));
+
+  // Intellisense state
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [caretWord, setCaretWord] = useState("");
 
   useEffect(() => {
     if (editorRef.current) {
@@ -44,17 +51,40 @@ const Editor: React.FC<EditorProps> = ({
       );
 
       // Check for unknown words
-      const words = content.toLowerCase().match(/\b\w+\b/g) || [];
+      const wordsInContent = content.toLowerCase().match(/\b\w+\b/g) || [];
       const unknown = new Set(
-        words.filter((word) => !dictionary.has(word) && word.length > 2)
+        wordsInContent.filter(
+          (word) => !dictionary.has(word) && word.length > 2
+        )
       );
       setUnknownWords(unknown);
     }
-  }, [content]);
+  }, [content, dictionary]);
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
     const newContent = (e.currentTarget as HTMLDivElement).innerText || "";
     onChange(newContent);
+
+    // Find current word at caret
+    const sel = window.getSelection();
+    if (sel && sel.anchorNode) {
+      const text = sel.anchorNode.textContent || "";
+      const caretPos = sel.anchorOffset;
+      const beforeCaret = text.slice(0, caretPos);
+      const match = beforeCaret.match(/(\w+)$/);
+      const currentWord = match ? match[1] : "";
+      setCaretWord(currentWord);
+      if (currentWord.length > 0) {
+        const filtered = words
+          .map((w) => w.word)
+          .filter((w) => w.toLowerCase().startsWith(currentWord.toLowerCase()))
+          .slice(0, 8);
+        setSuggestions(filtered);
+        setShowSuggestions(filtered.length > 0);
+      } else {
+        setShowSuggestions(false);
+      }
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -147,9 +177,38 @@ const Editor: React.FC<EditorProps> = ({
         </motion.div>
 
         {/* Autocomplete Suggestions */}
-        <div className="absolute top-0 left-0 pointer-events-none">
-          {/* This would contain autocomplete suggestions */}
-        </div>
+        {showSuggestions && (
+          <div
+            className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded shadow-lg mt-2 ml-6 w-64"
+            data-dropdown="true"
+          >
+            {suggestions.map((suggestion) => (
+              <div
+                key={suggestion}
+                className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 text-gray-900 dark:text-white"
+                onMouseDown={() => {
+                  // Insert suggestion at caret
+                  if (editorRef.current) {
+                    const sel = window.getSelection();
+                    if (sel && sel.anchorNode) {
+                      const text = sel.anchorNode.textContent || "";
+                      const caretPos = sel.anchorOffset;
+                      const beforeCaret = text
+                        .slice(0, caretPos)
+                        .replace(/(\w+)$/, suggestion);
+                      const afterCaret = text.slice(caretPos);
+                      sel.anchorNode.textContent = beforeCaret + afterCaret;
+                      onChange(editorRef.current.innerText || "");
+                      setShowSuggestions(false);
+                    }
+                  }
+                }}
+              >
+                {suggestion}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
