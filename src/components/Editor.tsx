@@ -53,11 +53,11 @@ const Editor: React.FC<EditorProps> = ({
   }, [content]);
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-    const newContent = e.currentTarget.innerText || "";
+    const newContent = (e.currentTarget as HTMLDivElement).innerText || "";
     onChange(newContent);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     // Handle tab key for indentation
     if (e.key === "Tab") {
       e.preventDefault();
@@ -67,7 +67,7 @@ const Editor: React.FC<EditorProps> = ({
     else if (e.key === "Enter") {
       // Let the default behavior happen, then update content
       setTimeout(() => {
-        const newContent = e.currentTarget.innerText || "";
+        const newContent = (e.currentTarget as HTMLDivElement).innerText || "";
         onChange(newContent);
       }, 0);
     }
