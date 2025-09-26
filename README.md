@@ -83,3 +83,5 @@ The application includes a built-in dictionary system that:
 ## License
 
 MIT License - see LICENSE file for details.
+
+https://www.figma.com/design/Gp5H1AXiiawyZJwovsMEsI/3-Free-Text-Editor-App-UI-Kit--Community-?node-id=1001-40512&t=e7TG6nfXlX2sA0VR-0
