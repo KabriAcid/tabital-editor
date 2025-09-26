@@ -13,7 +13,6 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
     "@types/node": "^24.5.2",
-    "better-sqlite3": "^12.4.1",
     "docx": "^9.5.1",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.344.0",
