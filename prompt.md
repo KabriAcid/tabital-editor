@@ -32,10 +32,9 @@ We need a **dedicated desktop application** that is offline-first, distraction-f
 
 ---
 
-
 ## Additional Requirements
 
-- Use captive portals for authentication or network access if needed (e.g., for cloud sync or online features)
+- Use React dropdown portals
 - All dropdowns and modals should close when the ESC key is pressed
 - Avoid Object-Oriented Programming (OOP); use functional programming and hooks in React
 - The app should be non-MVP: deliver a fully functional, production-ready experience, not just a minimal prototype
@@ -49,17 +48,17 @@ We need a **dedicated desktop application** that is offline-first, distraction-f
 - Rich text tools: Bold, Italic, Underline, Strikethrough, Font size, Font family, Alignment, Bullet list, Numbered list, Image, Link, Line spacing, and text coloring (foreground/background color)
 - **Color-coded review status:**
   - Red = Not reviewed
-  - Black = Reviewed
+  - Black = Default (not fully black but dark)
   - Orange = In progress
   - Green = Complete
   - Blue = Needs attention
   - Purple = Custom status
-- Rounded color picker list: When a color is chosen, the selected text changes to that color, visually indicating its review status.
+- Rounded color picker list: When a color is chosen, the selected or highlighted text changes to that color, visually indicating its review status.
 - All common shortcuts should match Windows Word (e.g., Ctrl+B for bold, Ctrl+I for italics, etc.)
 - Autosave every 10s with backup copies
 - Word count and character count in status bar
 - Light/Dark mode toggle (default Dark Mode)
-- Text field numbering of lines just like in Vscode.
+- Text field must display a gutter with line numbers functionality on the left side, exactly like VS Code, for easy reference and navigation
 
 ### 2. Toolbar (Word-like)
 
@@ -112,7 +111,10 @@ We need a **dedicated desktop application** that is offline-first, distraction-f
 
 ### 7. UX Design (Figma-Inspired)
 
-- Clean, minimal sidebar on the left with navigation icons and document actions
+- Sidebar must closely resemble VS Code, with vertical navigation icons and document actions
+- Toolbar must mimic Microsoft Word's functionality, but the layout and style should match the provided Figma design
+- The text editor area must include a gutter with line numbering, just like VS Code
+- A premium, custom-styled scrollbar should appear on the right side of the editor for smooth and visually appealing scrolling
 - Main editor area centered, with clear title and last updated info
 - Search bar at the top for searching within the file
 - Export and Save buttons are rounded and visually distinct
@@ -132,9 +134,10 @@ We need a **dedicated desktop application** that is offline-first, distraction-f
 
 ## Deliverables
 
+- Focus solely on markups and frontend implementation (React, TypeScript, Framer motion, Lucide, Tailwind, Vscode- inspired UI)
+- Provide the full recommended directory structure for the entire project, including main process, renderer, assets, fonts, and any other relevant folders
 - Full **Electron project** scaffolded with:
   - `/src/main` (Electron main process)
-  - `/src/renderer` (React/TypeScript/Tailwind UI powered by Vite)
   - `/assets/fonts/lucida-fulfulde.ttf` (Lucida Fulfulde)
 - Ready to run with `npm install && npm start`
 - Fully offline-capable (no external API calls)
